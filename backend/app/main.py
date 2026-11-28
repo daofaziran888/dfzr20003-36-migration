@@ -12,6 +12,7 @@ from app.config import settings
 from app.routers import ROUTERS
 from app.store import store
 from app.services.pipeline import bootstrap_cross_references
+from app.services.batch_registry import registry
 
 app = FastAPI(title="非遗手工艺传承工作台", version="1.0.0")
 
@@ -43,9 +44,11 @@ for module in ROUTERS:
 
 @app.on_event("startup")
 def init_cross_refs() -> None:
-    """启动时自动建立种子数据间的跨模块引用关系。"""
+    """启动时自动建立种子数据间的跨模块引用关系，并迁移存量申报批次。"""
     result = bootstrap_cross_references()
     if not result["ok"]:
         print(f"[startup] bootstrap_cross_references failed: {result}")
     else:
         print(f"[startup] cross references bootstrapped: {result['success']}/{result['total']} ok")
+    migration = registry.run_migration()
+    print(f"[startup] batch migration: {migration['message']}")

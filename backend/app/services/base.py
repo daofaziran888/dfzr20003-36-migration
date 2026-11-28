@@ -10,6 +10,8 @@ class BaseModuleService:
     MODULE = ""
     ENTITY = ""
     LIST_FIELDS: list[str] = []
+    # 不在列表列里展示、但随登记一并落库的领域字段（迁移状态、归档快照等）。
+    EXTRA_FIELDS: list[str] = []
     REQUIRED_FIELDS: list[str] = []
     STATUS_ORDER: list[str] = []
     ACTION_RULES: dict[str, str] = {}
@@ -53,6 +55,7 @@ class BaseModuleService:
         rows = store.rows(self.MODULE)
         entry = {"id": max((int(row.get("id", 0)) for row in rows), default=0) + 1}
         entry.update({field: values.get(field) for field in self.LIST_FIELDS})
+        entry.update({field: values.get(field) for field in self.EXTRA_FIELDS})
         entry["status"] = self.STATUS_ORDER[0]
         entry["pending"] = True
         entry["abnormal"] = False

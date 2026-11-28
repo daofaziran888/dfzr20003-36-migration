@@ -27,6 +27,15 @@ export type PageResult = {
   size: number
 }
 
+export type BatchRow = EntryRow & {
+  年度?: string
+  申报批次标识?: string
+  调查归档批号?: string
+  迁移状态?: string
+  年份补正依据?: string
+  年份补正时间?: string
+}
+
 export type ActionResult = {
   ok: boolean
   message: string
